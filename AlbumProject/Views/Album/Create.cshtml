@@ -1,0 +1,136 @@
+﻿@* @model AlbumProject.Models.Album *@
+
+@* @{ *@
+@*     ViewData["Title"] = "Create Album"; *@
+@* } *@
+
+
+@* <h1>Create Album</h1> *@
+@* <form asp-action="Create" method="post" enctype="multipart/form-data"> *@
+@*     @Html.AntiForgeryToken() *@
+@*     <div class="form-group"> *@
+@*         <small class="form-text text-danger"> *@
+@*             * *@
+@*         </small> *@
+@*         <label asp-for="Name">Name:</label> *@
+@*         <input asp-for="Name" class="form-control" /> *@
+@*         <span asp-validation-for="Name" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <div class="form-group"> *@
+@*         <small class="form-text text-danger"> *@
+@*             * *@
+@*         </small> *@
+@*         <label asp-for="Description">Descriptions:</label> *@
+@*         <textarea asp-for="Description" class="form-control"></textarea> *@
+@*         <span asp-validation-for="Description" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <div class="form-group"> *@
+@*         <label for="CoverPhoto">Cover Photo</label> *@
+@*         <input asp-for="CoverPhoto" class="form-control" accept="image/*" onchange="previewCoverPhoto()" /> *@
+@*         <span asp-validation-for="CoverPhoto" class="text-danger"></span> *@
+@*         <img id="coverPreview" src="@ViewBag.CoverPhotoTempPath" style="max-height: 200px; margin-top: 10px;" /> *@
+@*     </div> *@
+@*     <small class="form-text text-danger"> *@
+@*         *only (JPEG, GIF, and PNG) *@
+@*     </small> *@
+
+@*     <label>Songs:</label> *@
+@*     <br /> *@
+@*     <div class="d-flex justify-content-end mb-3"> *@
+@*         <button type="button" class="btn btn-sm btn-dark" onclick="addSong()">+ เพิ่มเพลง</button> *@
+@*     </div> *@
+
+@*     <br /> *@
+@*     <table class="table" id="songTable" border="1" style="border-collapse: collapse; width: 100%;"> *@
+
+@*         <thead> *@
+@*             <tr> *@
+@*                 <th style="width: 80%;">ชื่อเพลง</th> *@
+@*                 <th style="width: 20%;">จัดการ</th> *@
+@*             </tr> *@
+@*         </thead> *@
+        
+@*         <tbody> *@
+@*             <!-- เพลง --> *@
+@*         </tbody> *@
+@*     </table> *@
+
+    
+
+
+@*     <input type="submit" class="btn btn-dark" value="Save" /> *@
+@* </form> *@
+
+@* @section Scripts { *@
+@*     @await Html.PartialAsync("_ValidationScriptsPartial") *@
+
+@*     <script> *@
+@*         function addSong() { *@
+@*             const index = document.querySelectorAll('#songTable tbody tr').length; *@
+@*             const row = `<tr> *@
+@*                 <td> *@
+@*                     <input type="hidden" name="Songs[${index}].Id" value="0" /> *@
+@*                     <input type="text" name="Songs[${index}].Name" class="form-control" required /> *@
+@*                 </td> *@
+@*                 <td> *@
+@*                     <button type="button" class="btn btn-secondary btn-sm" onclick="removeRow(this)">Delete</button> *@
+@*                 </td> *@
+@*             </tr>`; *@
+@*             document.querySelector('#songTable tbody').insertAdjacentHTML('beforeend', row); *@
+@*         } *@
+
+@*         function removeRow(button) { *@
+@*             button.closest('tr').remove(); *@
+@*         } *@
+@*         function previewCoverPhoto() { *@
+@*             const input = document.getElementById("CoverPhoto"); *@
+@*             const preview = document.getElementById("coverPreview"); *@
+
+@*             if (input.files && input.files[0]) { *@
+@*                 const reader = new FileReader(); *@
+@*                 reader.onload = function (e) { *@
+@*                     preview.src = e.target.result; *@
+@*                 }; *@
+@*                 reader.readAsDataURL(input.files[0]); *@
+@*             } *@
+@*         } *@
+@*     </script> *@
+@* } *@
+
+
+@model AlbumProject.Models.Album
+
+@{
+    ViewData["Title"] = "Create Album";
+    List<Song> songs = Model.Songs?.ToList() ?? new List<Song>();
+}
+
+<h2>Create Album</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <!-- Album Fields -->
+    @Html.EditorFor(model => model, "AlbumEdit")
+
+    <!-- Songs Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Song Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.EditorFor(m => m.Songs)
+        </tbody>
+    </table>
+
+    <button type="submit" name="AddSong" value="true" class="btn btn-dark btn-sm" formnovalidate>+ Add Song</button>
+
+    <br /><br />
+    <button type="submit" class="btn btn-dark">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

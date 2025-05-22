@@ -1,0 +1,28 @@
+﻿@model AlbumProject.Models.Album
+
+@{
+    ViewData["Title"] = "Confirm Delete";
+}
+
+
+
+<div class="alert alert-danger">
+    <h2>Confirm Delete?</h2>
+</div>
+
+<div>
+    <h4>Album: @Model.Name</h4>
+    @if (Model.File != null)
+    {
+        <img src="@Model.File.FilePath" style="max-width: 200px;" />
+    }
+    <hr />
+    <h4>Descriptions: </h4>
+    <p>@Model.Description</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-secondary">ยืนยันการลบ</button>
+    <a asp-action="Index" class="btn btn-danger">ยกเลิก</a>
+</form>

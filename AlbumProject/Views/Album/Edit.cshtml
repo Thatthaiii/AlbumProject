@@ -1,0 +1,40 @@
+﻿@model AlbumProject.Models.Album
+
+@{
+    ViewData["Title"] = "Edit Album";
+    List<Song> songs = Model.Songs.ToList() ?? new List<Song>();
+
+}
+
+<h2>Edit Album</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <!-- Album Fields -->
+    @Html.EditorFor(model => model, "AlbumEdit")
+
+    <!-- Song List -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Song Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.EditorFor(m => m.Songs)
+        </tbody>
+    </table>
+
+    <button type="submit" name="AddSong" value="true" class="btn btn-dark btn-sm">+ Add Song</button>
+    <br /><br />
+    @* @for (int i = 0; i < Model.DeletedIds.Count; i++) *@
+    @* { *@
+    @*     <input type="hidden" name="DeletedIds[@i]" value="@Model.DeletedIds[i]" /> *@
+    @* } *@
+    <button type="submit" class="btn btn-dark">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+

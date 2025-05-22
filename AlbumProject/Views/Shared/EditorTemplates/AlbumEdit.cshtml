@@ -1,0 +1,41 @@
+﻿@model AlbumProject.Models.Album
+
+@Html.HiddenFor(m => m.Id)
+
+<div class="form-group">
+    <small class="form-text text-danger">
+        *
+    </small>
+    <label asp-for="Name">Name: </label>
+    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <small class="form-text text-danger">
+        *
+    </small>
+    <label asp-for="Description">Description: </label>
+    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label>Cover Photo: </label>
+    <input type="file" name="CoverPhoto" id="CoverPhoto" class="form-control" accept="image/*" onchange="previewCoverPhoto()" />
+	<small class="form-text text-danger">
+		*only (JPEG, GIF, and PNG)
+	</small>
+    <input type="hidden" name="CoverPhotoTempPath" id="CoverPhotoTempPath" value="@ViewBag.CoverPhotoTempPath" />
+    @Html.HiddenFor(m => m.FileId)
+    @if (!string.IsNullOrEmpty(ViewBag.CoverPhotoTempPath) || Model.File != null)
+    {
+        <div style="width: 200px; height: 200px; overflow: hidden; border-radius: 10px; margin-top: 10px;">
+            @if (Model.File != null)
+            {
+                <img id="coverPreview" src="@Model.File.FilePath" style="width: 150px;" />
+                @Html.Hidden("OldCoverPhotoPath", Model.File.FilePath)
+            }
+        </div>
+    }
+</div>

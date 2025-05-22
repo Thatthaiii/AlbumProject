@@ -1,0 +1,17 @@
+﻿@model AlbumProject.Models.Song
+
+@{
+    string fullName = ViewData.TemplateInfo.GetFullHtmlFieldName(""); // Songs[0]
+    string index = fullName.Substring(fullName.IndexOf('[') + 1);
+    index = index.Substring(0, index.IndexOf(']')); // ค่าจะเป็น "0", "1", ...
+}
+
+<tr>
+    <td>
+        @Html.HiddenFor(m => m.Id)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+    </td>
+    <td>
+        <button type="submit" name="RemoveIndex" value="@index" class="btn btn-sm btn-secondary" formnovalidate>Remove</button>
+    </td>
+</tr>

@@ -1,0 +1,80 @@
+﻿@model List<AlbumProject.Models.Album>
+
+@{
+    ViewData["Title"] = "Albums";
+    int index = 1;
+}
+
+<h2>Albums</h2>
+<br />
+<a asp-action="Create" class="btn btn-sm btn-dark">Create New Album</a>
+<br />
+<br />
+
+<div class="d-flex justify-content-end mb-3">
+    <form asp-action="Index" method="get" class="form-inline mb-3">
+
+        <div class="d-flex justify-content-center mb-3">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Search by Name" />
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+
+    </form>
+</div>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th style="width: 5%;" align="center">No.</th>
+            <th style="width: 20%;" align="center">Name</th>
+            <th style="width: 20%;" align="center">Cover Photo</th>
+            <th>Songs</th>
+            <th style="width: 15%;">Manage</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        @foreach (Album album in Model)
+        {
+            <tr>
+                <td>@index</td>
+                <td>@album.Name</td>
+                <td>
+                    <div class="d-flex justify-content-center mb-3">
+                        @if (album.File != null)
+                        {
+                            <div style="width: 150px; height: 150px; overflow: hidden; border-radius: 8px;">
+                                <img src="@album.File.FilePath" style="width: 100%; height: 100%; object-fit: cover;" />
+                            </div>
+                        }
+                    </div>
+
+                </td>
+                <td>
+                    @if (album.Songs != null && album.Songs.Any())
+                    {
+                        <ul>
+                            @foreach (Song song in album.Songs)
+                            {
+                                <li>@song.Name</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No songs</span>
+                    }
+                </td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <a asp-action="Edit" asp-route-id="@album.Id" class="btn btn-sm btn-dark me-2">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@album.Id" class="btn btn-sm btn-secondary">Delete</a>
+                    </div>
+                </td>
+
+            </tr>
+            index++;
+        }
+    </tbody>
+</table>
