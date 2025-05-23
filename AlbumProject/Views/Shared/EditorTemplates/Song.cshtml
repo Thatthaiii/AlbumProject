@@ -7,12 +7,24 @@
     index = index.Substring(0, index.IndexOf(']')); // ค่าจะเป็น "0", "1", ...
 }
 
-<tr>
-    <td>
-        @Html.HiddenFor(m => m.Id)
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
-    </td>
-    <td>
-        <button type="submit" name="RemoveIndex" value="@index" class="btn btn-sm btn-secondary" formnovalidate>Remove</button>
-    </td>
-</tr>
+@if (!Model.IsDeleted)
+{
+    <tr>
+        <td>
+            @Html.HiddenFor(m => m.Id)
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.HiddenFor(m => m.IsDeleted) <!-- ต้องอยู่ข้างในด้วย -->
+        </td>
+        <td>
+            <button type="submit" name="RemoveId" value="@Model.Id" class="btn btn-danger btn-sm">Remove</button>
+
+        </td>
+    </tr>
+}
+else
+{
+    
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.Name)
+    @Html.HiddenFor(m => m.IsDeleted)
+}

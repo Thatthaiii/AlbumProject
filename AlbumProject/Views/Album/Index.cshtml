@@ -35,7 +35,7 @@
         </tr>
     </thead>
     <tbody>
-        
+
         @foreach (Album album in Model)
         {
             <tr>
@@ -53,10 +53,11 @@
 
                 </td>
                 <td>
-                    @if (album.Songs != null && album.Songs.Any())
+
+                    @if (album.Songs != null && album.Songs.Any(m => !m.IsDeleted))
                     {
                         <ul>
-                            @foreach (Song song in album.Songs)
+                            @foreach (Song song in album.Songs.Where(m => !m.IsDeleted))
                             {
                                 <li>@song.Name</li>
                             }

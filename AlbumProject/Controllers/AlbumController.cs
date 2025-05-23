@@ -50,7 +50,7 @@ namespace AlbumProject.Controllers
         // POST: Album/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Album album,IFormFile? CoverPhoto,string? CoverPhotoTempPath,string? AddSong,string? RemoveIndex)
+        public IActionResult Create(Album album,IFormFile? CoverPhoto,string? CoverPhotoTempPath,string? AddSong,string? RemoveId)
         {
             album.Songs ??= new List<Song>();
 
@@ -70,20 +70,15 @@ namespace AlbumProject.Controllers
                 return View(album);
             }
 
-            // กรณีกด "Remove"
-            if (!string.IsNullOrEmpty(RemoveIndex) && int.TryParse(RemoveIndex, out int removeIdx))
+            if (int.TryParse(RemoveId, out int songIdToRemove))
             {
-                List<Song> songList = album.Songs.ToList();
-                if (removeIdx >= 0 && removeIdx < album.Songs.Count)
+                foreach (Song song in album.Songs)
                 {
-                    songList.RemoveAt(removeIdx);
-                }
-                
-                album.Songs = songList;
-
-                if (CoverPhoto == null && !string.IsNullOrEmpty(CoverPhotoTempPath))
-                {
-                    ViewBag.CoverPhotoTempPath = CoverPhotoTempPath;
+                    if (song.Id == songIdToRemove)
+                    {
+                        song.IsDeleted = true;
+                        break;
+                    }
                 }
 
                 ModelState.Clear();
@@ -125,7 +120,7 @@ namespace AlbumProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Album album, string? AddSong, int? RemoveIndex, string? OldCoverPhotoPath, List<int>? DeletedIds)
+        public IActionResult Edit(Album album, string? AddSong, string? RemoveId, string? OldCoverPhotoPath, List<int>? DeletedIds)
         {
 
             if (!string.IsNullOrEmpty(AddSong))
@@ -141,6 +136,24 @@ namespace AlbumProject.Controllers
                 return View(album);
             }
 
+            if (int.TryParse(RemoveId, out int songIdToRemove))
+            {
+                if (album.File == null && !string.IsNullOrEmpty(OldCoverPhotoPath))
+                {
+                    album.File = new Models.File { FilePath = OldCoverPhotoPath };
+                }
+                foreach (Song song in album.Songs)
+                {
+                    if (song.Id == songIdToRemove)
+                    {
+                        song.IsDeleted = true;
+                        break;
+                    }
+                }
+
+                ModelState.Clear();
+                return View(album);
+            }
 
             IFormFile newCoverFile = Request.Form.Files["CoverPhoto"];
 
