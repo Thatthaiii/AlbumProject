@@ -127,14 +127,10 @@ namespace AlbumProject.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Album album, string? AddSong, int? RemoveIndex, string? OldCoverPhotoPath, List<int>? DeletedIds)
         {
-            List<Song> songs = album.Songs?.Where(s => !s.IsDeleted).ToList() ?? new List<Song>();
-            List<int> deletedIds = DeletedIds ?? new List<int>();
 
-            // เพิ่มเพลงใหม่
             if (!string.IsNullOrEmpty(AddSong))
             {
-                songs.Add(new Song());
-                album.Songs = songs;
+                album.Songs.Add(new Song());
 
                 if (album.File == null && !string.IsNullOrEmpty(OldCoverPhotoPath))
                 {
@@ -145,45 +141,16 @@ namespace AlbumProject.Controllers
                 return View(album);
             }
 
-            // ลบเพลงตาม index
-            if (RemoveIndex.HasValue && RemoveIndex.Value < songs.Count)
-            {
-                Song songToRemove = songs[RemoveIndex.Value];
-                if (songToRemove.Id > 0)
-                {
-                    deletedIds.Add(songToRemove.Id);
-                }
 
-                // ยังต้องลบออกจาก List เพื่อไม่ให้ Render ซ้ำ
-                songs.RemoveAt(RemoveIndex.Value);
-                album.Songs = songs;
-
-                if (album.File == null && !string.IsNullOrEmpty(OldCoverPhotoPath))
-                {
-                    album.File = new Models.File { FilePath = OldCoverPhotoPath };
-                }
-
-                ViewBag.DeletedIds = deletedIds;
-                ModelState.Clear();
-                return View(album);
-            }
-
-            // กด Save จริง
             IFormFile newCoverFile = Request.Form.Files["CoverPhoto"];
 
-            bool success = album.Update(_context, newCoverFile, songs, deletedIds);
+            bool success = album.Update(_context, newCoverFile);
 
             if (!success)
                 return NotFound();
 
             return RedirectToAction("Index");
         }
-
-
-
-
-
-
 
         // GET: Album/Delete/5
         public IActionResult Delete(int id)

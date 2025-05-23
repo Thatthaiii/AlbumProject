@@ -24,6 +24,7 @@ namespace AlbumProject.Models
         {
             this.AlbumId = albumId;
             this.CreatedDate = DateTime.Now;
+            this.CreatedBy = "Ohm";
             dbContext.Songs.Add(this);
         }
 
@@ -36,6 +37,20 @@ namespace AlbumProject.Models
                     song.AlbumId = albumId;
                     song.CreatedDate = DateTime.Now;
                     dbContext.Songs.Add(song);
+                }
+            }
+        }
+
+        public static void Update(AlbumProjectContext dbContext, List<Song> songs)
+        {
+
+            foreach (Song song in songs)
+            {
+                if (song.Id > 0)
+                {
+                    song.UpdatedDate = DateTime.Now;
+                    song.UpdatedBy = "Ohm";
+                    dbContext.Songs.Update(song);
                 }
             }
         }

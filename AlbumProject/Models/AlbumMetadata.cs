@@ -59,23 +59,22 @@ namespace AlbumProject.Models
             this.UpdatedBy = "Ohm";
             this.UpdatedDate = DateTime.Now;
 
-            // เก็บเพลงแยกไว้ก่อน insert
-            List<Song> tempSongs = this.Songs.ToList();
 
-            // ล้าง Songs เพื่อไม่ให้ EF พยายาม Insert ซ้ำ
-            this.Songs = null;
 
-            dbContext.Albums.Add(this);
-            dbContext.SaveChanges();
 
-            // เพิ่มเพลง
-            foreach (Song song in tempSongs)
+
+            foreach (Song song in this.Songs)
             {
                 if (!string.IsNullOrWhiteSpace(song.Name))
                 {
-                    song.Create(dbContext, this.Id);
+
+                    song.CreatedDate = DateTime.Now;
+                    song.CreatedBy = "Ohm";
+
                 }
             }
+
+            dbContext.Albums.Add(this);
 
             dbContext.SaveChanges(); // บันทึกเพลง
 
@@ -84,22 +83,12 @@ namespace AlbumProject.Models
 
 
 
-        public bool Update(AlbumProjectContext dbContext,IFormFile? newCoverFile,List<Song> newSongs,List<int> deletedSongIds)
+        public bool Update(AlbumProjectContext dbContext,IFormFile? newCoverFile)
         {
-            // ดึงข้อมูลจากฐานข้อมูล
-            Album? existingAlbum = dbContext.Albums
-                .Include(a => a.Songs)
-                .Include(a => a.File)
-                .FirstOrDefault(a => a.Id == this.Id && !a.IsDeleted);
 
-            if (existingAlbum == null)
-                return false;
 
-            // อัปเดตข้อมูลอัลบั้ม
-            existingAlbum.Name = this.Name;
-            existingAlbum.Description = this.Description;
-            existingAlbum.UpdatedDate = DateTime.Now;
-            existingAlbum.UpdatedBy = "Ohm";
+            this.UpdatedDate = DateTime.Now;
+            this.UpdatedBy = "Ohm";
 
             // หากมีการอัปโหลดไฟล์ใหม่
             if (newCoverFile != null && newCoverFile.Length > 0)
@@ -107,19 +96,36 @@ namespace AlbumProject.Models
                 File? uploadedFile = File.Create(dbContext, newCoverFile);
                 if (uploadedFile != null)
                 {
-                    existingAlbum.FileId = uploadedFile.Id;
+                    this.FileId = uploadedFile.Id;
                 }
             }
 
-            // เพิ่มเพลงใหม่
-            Song.Create(dbContext, newSongs, existingAlbum.Id);
+
+
+
+            foreach (Song song in this.Songs)
+            {
+                if (song.Id > 0 && !string.IsNullOrWhiteSpace(song.Name))
+                {
+                    song.UpdatedDate = DateTime.Now;
+                    song.UpdatedBy = "Ohm";
+                }
+
+                if(song.Id == 0)
+                {
+                    song.CreatedDate = DateTime.Now;
+                    song.CreatedBy = "Ohm";
+                }
+
+            }
 
             // ลบเพลงแบบ Soft Delete
-            if (deletedSongIds != null && deletedSongIds.Any())
-            {
-                string idsString = string.Join(",", deletedSongIds);
-                Song.Delete(dbContext, idsString); // <-- Soft delete ที่นี่
-            }
+            //if (deletedSongIds != null && deletedSongIds.Any())
+            //{
+            //    string idsString = string.Join(",", deletedSongIds);
+            //    Song.Delete(dbContext, idsString); // <-- Soft delete ที่นี่
+            //}
+            dbContext.Albums.Update(this);
 
             dbContext.SaveChanges();
             return true;
